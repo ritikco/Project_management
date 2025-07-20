@@ -169,7 +169,7 @@ exports.editTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const userId = req.token._id;
-    const id = req.params;
+    const {id} = req.params;
 
     const user = await User.findById(userId);
     if (!user) {
