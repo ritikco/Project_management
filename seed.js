@@ -5,12 +5,12 @@ const bcrypt = require('bcrypt');
 
 dotenv.config();
 
-// Import your models
-const User = require('./models/User');
-const Project = require('./models/Project');
+const User = require('./user/userModel');
+const Project = require('./Project/projectModel');
+const Task = require('./tasks/taskModel'); 
 
 // Connect to DB
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log('MongoDB connected'))
@@ -18,9 +18,10 @@ mongoose.connect(process.env.MONGO_URL, {
 
 const seed = async () => {
   try {
-    // Clear existing data (optional)
+    // Clear existing data
     await User.deleteMany({});
     await Project.deleteMany({});
+    await Task.deleteMany({}); 
 
     // Create users
     const hashedPassword = await bcrypt.hash('123456', 10);
@@ -39,7 +40,7 @@ const seed = async () => {
     });
 
     // Create projects
-    await Project.create([
+    const projects = await Project.create([
       {
         title: 'Project Alpha',
         description: 'First project for Ritik',
@@ -59,6 +60,42 @@ const seed = async () => {
         userId: user2._id
       }
     ]);
+
+    // Helper function to create tasks
+    const createTasksForProject = async (project, user) => {
+      const now = new Date();
+      await Task.create([
+        {
+          title: `Task 1 for ${project.title}`,
+          description: 'First task',
+          status: 'todo',
+          dueDate: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 7 days later
+          projectId: project._id,
+          userId: user._id
+        },
+        {
+          title: `Task 2 for ${project.title}`,
+          description: 'Second task',
+          status: 'inProgress',
+          dueDate: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000),
+          projectId: project._id,
+          userId: user._id
+        },
+        {
+          title: `Task 3 for ${project.title}`,
+          description: 'Third task',
+          status: 'done',
+          dueDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
+          projectId: project._id,
+          userId: user._id
+        }
+      ]);
+    };
+
+    // Create tasks for each project
+    await createTasksForProject(projects[0], user1); // Project Alpha
+    await createTasksForProject(projects[1], user1); // Project Beta
+    await createTasksForProject(projects[2], user2); // Project Gamma
 
     console.log('✅ Seed data added successfully');
     process.exit();
