@@ -18,9 +18,9 @@ exports.createTask = async (req, res) => {
     }
 
 
-    const { title, description, dueDate, projectId } = req.body;
+    const { title, description, status , dueDate, projectId } = req.body;
 
-    if (!title || !description || !dueDate || !projectId) {
+    if (!title || !description || !status || !dueDate || !projectId) {
       return res.send({
         statusCode: 400,
         success: false,
@@ -57,6 +57,15 @@ exports.createTask = async (req, res) => {
       });
     }
 
+    const allowedStatus = ["todo", "inProgress", "done"];
+    if (status && !allowedStatus.includes(status)) {
+      return res.send({
+        statusCode: 400,
+        success: false,
+        message: "Invalid status value",
+        result: {}
+      });
+    }
 
     const task = new Task({
       title: title.trim(),
@@ -64,7 +73,7 @@ exports.createTask = async (req, res) => {
       dueDate,
       projectId,
       userId,
-      status: 'todo'
+      status
     });
 
     await task.save();
