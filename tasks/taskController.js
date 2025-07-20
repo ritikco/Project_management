@@ -228,45 +228,45 @@ exports.deleteTask = async (req, res) => {
 };
 
 
-exports.getMyTasks = async (req, res) => {
-  try {
-    const userId = req.token._id;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.send({
-        statusCode: 400,
-        success: false,
-        message: "User not found",
-        result: {}
-      });
-    }
+// exports.getMyTasks = async (req, res) => {
+//   try {
+//     const userId = req.token._id;
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.send({
+//         statusCode: 400,
+//         success: false,
+//         message: "User not found",
+//         result: {}
+//       });
+//     }
 
-    const tasks = await Task.find({
-      userId,
-      status: { $ne: 'delete' }
-    })
-    .populate({
-      path: 'projectId',
-      select: 'title' 
-    })
-    .sort({ dueDate: 1 });
+//     const tasks = await Task.find({
+//       userId,
+//       status: { $ne: 'delete' }
+//     })
+//     .populate({
+//       path: 'projectId',
+//       select: 'title' 
+//     })
+//     .sort({ dueDate: 1 });
 
-    return res.send({
-      statusCode: 200,
-      success: true,
-      message: "Tasks fetched successfully",
-      result: tasks
-    });
+//     return res.send({
+//       statusCode: 200,
+//       success: true,
+//       message: "Tasks fetched successfully",
+//       result: tasks
+//     });
 
-  } catch (error) {
-    return res.send({
-      statusCode: 500,
-      success: false,
-      message: "Internal server error",
-      result: error.message
-    });
-  }
-};
+//   } catch (error) {
+//     return res.send({
+//       statusCode: 500,
+//       success: false,
+//       message: "Internal server error",
+//       result: error.message
+//     });
+//   }
+// };
 
 exports.getMyTasks = async (req, res) => {
   try {
