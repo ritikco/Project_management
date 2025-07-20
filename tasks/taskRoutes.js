@@ -9,7 +9,7 @@ const upload = multer();
 router.post('/create-task',  upload.none() , verifyToken, taskController.createTask);
 router.post('/edit-task/:id',  upload.none() , verifyToken, taskController.editTask);
 router.post('/delete-task/:id',  upload.none() , verifyToken, taskController.deleteTask);
-router.post('/get-user-task',  upload.none() , verifyToken, taskController.getMyTasks);
+router.post('/get-user-task/:projectId',  upload.none() , verifyToken, taskController.getMyTasks);
 
 
 module.exports = router; 

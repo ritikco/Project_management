@@ -282,12 +282,27 @@ exports.getMyTasks = async (req, res) => {
     }
 
     const { page = 1, limit = 10 } = req.query;
-    const {statusFilter} = req.body;
+    const { statusFilter } = req.body;
+    const { projectId } = req.params;
+
+
+    if (projectId && !mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.send({
+        statusCode: 400,
+        success: false,
+        message: "Invalid projectId",
+        result: {}
+      });
+    }
 
     const query = {
       userId,
-      status: { $ne: 'delete' } 
+      status: { $ne: 'delete' }
     };
+
+    if (projectId) {
+      query.projectId = projectId;
+    }
 
     const allowedStatus = ['todo', 'inProgress', 'done'];
     if (statusFilter && allowedStatus.includes(statusFilter)) {
